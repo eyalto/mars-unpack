@@ -1,0 +1,42 @@
+    1  google-drive-ocamlfuse --help
+    2  ls /mnt/
+    3  mkdir /mnt/gdrive
+    4  google-drive-ocamlfuse -headless -id 290690601641-b1v276qmqht4simgmmccjogptp2af1rb.apps.googleusercontent.com -secret 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 /mnt/drive
+    5  google-drive-ocamlfuse -headless -id 290690601641-b1v276qmqht4simgmmccjogptp2af1rb.apps.googleusercontent.com -secret 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 /mnt/gdrive
+    6  ls /mnt/gdrive/
+    7  google-drive-ocamlfuse --help
+    8  ls ~/.gdfuse/
+    9  ls ~/.gdfuse/default/config
+   10  cat ~/.gdfuse/default/config
+   11  vi ~/.gdfuse/default/config
+   12  nano ~/.gdfuse/default/config
+   13  apt install vim
+   14  vi ~/.gdfuse/default/config
+   15  google-drive-ocamlfuse -cc
+   16  ls /mnt/gdrive/
+   17  google-drive-ocamlfuse -cc /mnt/gdrive
+   18  fusemout =uc /mnt/gdrive
+   19  fusemount -u /mnt/gdrive
+   20  fusermount -u mountpoint
+   21  fusermount -u /mnt/gdrive
+   22  google-drive-ocamlfuse -cc /mnt/gdrive
+   23  ls /mnt/gdrive/
+   24  cd RAW_DATA
+   25  vim /mnt/gdrive/RAW_DATA/eyal.txt
+   26  history
+
+
+
+   unpack-account@recording-service-381409.iam.gserviceaccount.com
+
+
+   # history commands for k3s deployment (create instance, install k3s, get tocken)
+   multipass launch --name k3s --mem 8G --disk 50G
+   multipass exec k3s -- bash -c "curl -sfL https://get.k3s.io | sh -"
+   TOKEN=$(multipass exec k3s sudo cat /var/lib/rancher/k3s/server/node-token)
+   IP=$(multipass info k3s | grep IPv4 | awk '{print $2}')
+   # copy the config from k3s master change the ip in the config file 
+   multipass exec k3s sudo cat /etc/rancher/k3s/k3s.yaml > .k3s.yaml
+   sed -i '' "s/127.0.0.1/$IP/" .k3s.yaml
+   # export the KUBECONFIG 
+   export KUBECONFIG=$PWD/.k3s.yaml

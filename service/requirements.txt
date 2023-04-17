@@ -1,0 +1,9 @@
+munch
+redis
+opencv-python
+numpy
+Pillow
+flask
+flask_restx
+flask_healthz
+werkzeug
