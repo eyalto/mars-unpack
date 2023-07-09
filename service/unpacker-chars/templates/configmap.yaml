@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unpack-config
+data:
+  config.json: |-
+{{ .Files.Get .Values.config.file | indent 4 }}

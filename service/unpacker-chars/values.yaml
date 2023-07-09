@@ -87,6 +87,9 @@ affinity: {}
 #
 redis:
   enabled: true
-  
+
 unpacker-service:
   enabled: true
+
+config:
+  file: "config/config.json"

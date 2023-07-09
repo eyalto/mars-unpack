@@ -19,6 +19,7 @@ spec:
       {{- end }}
       labels:
         {{- include "unpacker.selectorLabels" . | nindent 8 }}
+        app: {{ .Values.nameOverride }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -47,6 +48,16 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: unpack-config
+              mountPath: "etc/mars"
+      volumes:
+        - name: unpack-config
+          configMap:
+            name: unpack-config
+            items:
+            - key: config.json
+              path: config.json
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

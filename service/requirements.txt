@@ -6,4 +6,5 @@ Pillow
 flask
 flask_restx
 flask_healthz
-werkzeug
+debugpy
+uvicorn

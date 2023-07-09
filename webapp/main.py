@@ -39,15 +39,12 @@ default_config = {
         "SLEEP_BETWEEN_ATTEMPTS": 2
     }
 }
+# configmap location 
+default_config_path = "/etc/mars/config.json"
+
 #
 # global
 #semaphore = None
-
-# health checks
-_ready = False
-_connection_attempts = 0
-#
-logger = logging.getLogger("MARS")
 #
 HEALTHZ = {
     "live": f"{__name__}.liveness",
@@ -55,9 +52,15 @@ HEALTHZ = {
 }
 #
 # global conf
-conf_filename = os.environ.get('MARSCONFIG') if 'MARSCONFIG' in os.environ else "config.json"
+conf_filename = os.environ.get('MARSCONFIG') if 'MARSCONFIG' in os.environ else default_config_path
 config = json.load(open(conf_filename)) if os.path.isfile(conf_filename) else default_config
 conf = munch.munchify(config)
+
+# health checks
+_ready = False
+_connection_attempts = 0
+#
+logger = logging.getLogger(conf.log.name)
 
 # healthchecks
 def liveness():

@@ -1,0 +1,28 @@
+{
+    "api": {
+        "port": 8001
+    },
+    "monitor": {
+        "port": 5080
+    },
+    "log" : {
+        "name": "MARS",
+        "level": "DEBUG"
+    },
+    "unpack" : {
+        "parallel": 8,
+        "verbose" : false,
+        "threads" : 1
+    },
+    "redis": {
+        "host": "redis",
+        "port": 6379,
+        "input_queue": "MARS:UNPACK:QUEUE" ,
+        "working_queue": "MARS:UNPACK:WORK",
+        "failed_queue": "MARS:UNPACK:FAILED" ,
+        "success_queue": "MARS:UNPACK:DONE" ,
+        "MAX_CUNCURRENT_WORKING_CONSUMERS": 3, 
+        "CONNECTION_BACKOFF_ATTEMPTS": 5,
+        "SLEEP_BETWEEN_ATTEMPTS": 2
+    }
+}

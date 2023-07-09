@@ -11,7 +11,7 @@ RUN apt update
 
 RUN apt install -y ffmpeg libsm6 libxext6
 
-RUN apt install -y google-drive-ocamlfuse
+#RUN apt install -y google-drive-ocamlfuse
 
 RUN apt install -y python3.11
 
@@ -22,9 +22,12 @@ RUN apt install -y curl
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-RUN mkdir /mnt/gdrive
+#RUN mkdir /mnt/gdrive
 
 COPY . /app
 WORKDIR /app
 
-CMD ["python3", "main_consumer.py"]
+#-m debugpy --listen localhost:5678 -m mymodule
+#"uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"
+#CMD ["python3", "=m", "ptvsd", "--port", "", "main_webapp.py"]
+CMD ["python3", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

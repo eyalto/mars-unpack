@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#eyalto
+.DS_Store/
+.DS_Store
+bck/
+.vscode

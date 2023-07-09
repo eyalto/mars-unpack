@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "unpacker-service.fullname" . }}
+  name: {{ include "redis.fullname" . }}
   labels:
-    {{- include "unpacker-service.labels" . | nindent 4 }}
+    {{- include "redis.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "unpacker-service.selectorLabels" . | nindent 6 }}
+      {{- include "redis.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,14 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "unpacker-service.selectorLabels" . | nindent 8 }}
-        app: {{ .Values.nameOverride }}
+        {{- include "redis.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "unpacker-service.serviceAccountName" . }}
+      serviceAccountName: {{ include "redis.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -33,14 +32,25 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          args: ["--appendonly", "yes"]
+          env:
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "google-drive-ocamlfuse -config config.fuse /mnt/gdrive"]
-            preStop:
-              exec:
-                command: ["/bin/sh","-c","fusermount -u /mnt/gdrive"]
+          ports:
+            - name: redis-port
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command: 
+              - redis-cli
+              - PING
+          readinessProbe:
+            exec:
+              command: 
+              - redis-cli
+              - PING
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

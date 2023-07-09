@@ -30,13 +30,14 @@
    unpack-account@recording-service-381409.iam.gserviceaccount.com
 
 
-   # history commands for k3s deployment (create instance, install k3s, get tocken)
-   multipass launch --name k3s --mem 8G --disk 50G
-   multipass exec k3s -- bash -c "curl -sfL https://get.k3s.io | sh -"
-   TOKEN=$(multipass exec k3s sudo cat /var/lib/rancher/k3s/server/node-token)
-   IP=$(multipass info k3s | grep IPv4 | awk '{print $2}')
-   # copy the config from k3s master change the ip in the config file 
-   multipass exec k3s sudo cat /etc/rancher/k3s/k3s.yaml > .k3s.yaml
-   sed -i '' "s/127.0.0.1/$IP/" .k3s.yaml
-   # export the KUBECONFIG 
-   export KUBECONFIG=$PWD/.k3s.yaml
+# create instance
+multipass launch --name k3s --cpus 4 --memory 8g --disk 30g
+# install k3s
+multipass exec k3s -- bash -c "curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -"
+$ get IP
+K3S_IP=$(multipass info k3s | grep IPv4 | awk '{print $2}')
+# get config
+ multipass exec k3s sudo cat /etc/rancher/k3s/k3s.yaml | sed "s/127.0.0.1/${K3S_IP}/" > ${HOME}/k3s.conf
+ chmod 600 ${HOME}/k3s.conf
+# export KUBECONFIG
+export KUBECONFIG=${HOME}/k3s.conf

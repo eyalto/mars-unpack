@@ -25,7 +25,7 @@ default_config = {
         "threads" : 1
     },
     "redis": {
-        "host": "localhost",
+        "host": "redis",
         "port": 6379,
         "input_queue": "MARS:UNPACK:QUEUE" ,
         "working_queue": "MARS:UNPACK:WORK",
@@ -36,6 +36,9 @@ default_config = {
         "SLEEP_BETWEEN_ATTEMPTS": 2
     }
 }
+# configmap location 
+default_config_path = "/etc/mars/config.json"
+
 #
 # global
 #semaphore = None
@@ -48,7 +51,7 @@ logger = logging.getLogger("MARS")
 #
 #
 # global conf
-conf_filename = os.environ.get('MARSCONFIG') if 'MARSCONFIG' in os.environ else "config.json"
+conf_filename = os.environ.get('MARSCONFIG') if 'MARSCONFIG' in os.environ else  default_config_path
 config = json.load(open(conf_filename)) if os.path.isfile(conf_filename) else default_config
 conf = munch.munchify(config)
 
@@ -71,7 +74,7 @@ def reconnect():
 
     while (not connected and trials < conf.redis.CONNECTION_BACKOFF_ATTEMPTS):
         try: 
-            r = redis.Redis(host='localhost', port=6379)
+            r = redis.Redis(host=conf.redis.host, port=conf.redis.port)
             r.ping()
             connected = True
         except (redis.exceptions.ConnectionError):
@@ -102,6 +105,8 @@ def redis_consumer():
                 # setup
                 output_paths = unpack.setup(data.input, data.output)
                 rc = unpack.unpack(data.input, output_paths, conf.unpack.parallel, conf.unpack.verbose)
+                data["output"] = output_paths
+                s = json.dumps(data)
                 # add to success queue
                 if rc == 0:
                     r.lpush(conf.redis.success_queue,s)
